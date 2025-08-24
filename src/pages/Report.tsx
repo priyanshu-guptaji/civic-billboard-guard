@@ -47,56 +47,56 @@ const Report = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="container-responsive py-responsive">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-4">
+          <div className="text-center mb-8 animate-fade-in-up">
+            <h1 className="text-responsive-3xl font-bold text-foreground mb-4">
               Report Billboard Violation
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-responsive-lg leading-relaxed max-w-3xl mx-auto">
               Help keep our city safe and compliant by reporting unauthorized or problematic billboards
             </p>
           </div>
 
           {/* Gamification Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Card>
-              <CardContent className="flex items-center p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-responsive mb-8">
+            <Card className="card-glass">
+              <CardContent className="flex items-center p-responsive">
                 <Award className="h-8 w-8 text-warning mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-foreground">247</div>
-                  <div className="text-sm text-muted-foreground">Your Points</div>
+                  <div className="text-responsive-2xl font-bold text-gradient">247</div>
+                  <div className="text-responsive-sm text-muted-foreground">Your Points</div>
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="flex items-center p-4">
+            <Card className="card-glass">
+              <CardContent className="flex items-center p-responsive">
                 <Zap className="h-8 w-8 text-success mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-foreground">12</div>
-                  <div className="text-sm text-muted-foreground">Reports This Month</div>
+                  <div className="text-responsive-2xl font-bold text-gradient">12</div>
+                  <div className="text-responsive-sm text-muted-foreground">Reports This Month</div>
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="flex items-center p-4">
-                <Badge variant="secondary" className="text-sm">
+            <Card className="card-glass">
+              <CardContent className="flex items-center justify-center p-responsive">
+                <Badge variant="secondary" className="text-responsive-sm bg-gradient-secondary">
                   🥈 Silver Reporter
                 </Badge>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-responsive">
             {/* Reporting Form */}
-            <Card>
+            <Card className="card-glass animate-scale-in">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-responsive-xl">
                   <Camera className="h-5 w-5 mr-2 text-primary" />
                   Submit Report
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-responsive-base">
                   Fill out the details and upload a photo of the billboard violation
                 </CardDescription>
               </CardHeader>
@@ -184,24 +184,24 @@ const Report = () => {
             </Card>
 
             {/* Quick AR Scan */}
-            <Card>
+            <Card className="card-glass animate-scale-in">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-responsive-xl">
                   <Zap className="h-5 w-5 mr-2 text-accent" />
                   Quick AR Verification
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-responsive-base">
                   Instantly check if a billboard is authorized using your camera
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="bg-accent/10 rounded-lg p-6 text-center">
+                <div className="hero-gradient rounded-xl p-6 text-center card-glass">
                   <Camera className="h-12 w-12 text-accent mx-auto mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">AR Scanner</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <h3 className="font-semibold text-foreground mb-2 text-responsive-lg">AR Scanner</h3>
+                  <p className="text-responsive-sm text-muted-foreground mb-4">
                     Point your camera at any billboard to see its authorization status in real-time
                   </p>
-                  <Button variant="default" className="w-full">
+                  <Button variant="default" className="w-full btn-glow">
                     Launch AR Scanner
                   </Button>
                 </div>

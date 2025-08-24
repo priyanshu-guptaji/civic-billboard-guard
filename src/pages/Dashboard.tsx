@@ -42,24 +42,24 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+      <div className="container-responsive py-responsive">
+        <div className="mb-8 animate-fade-in-up">
+          <h1 className="text-responsive-3xl font-bold text-foreground mb-2">
             Authority Dashboard
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-responsive-lg leading-relaxed max-w-4xl">
             Monitor billboard compliance and manage violation reports across the city
           </p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-responsive mb-8">
+          <Card className="card-glass animate-scale-in">
             <CardContent className="flex items-center p-6">
               <BarChart3 className="h-8 w-8 text-primary mr-4" />
               <div>
-                <div className="text-2xl font-bold text-foreground">{stats.totalReports.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Reports</div>
+                <div className="text-responsive-2xl font-bold text-gradient">{stats.totalReports.toLocaleString()}</div>
+                <div className="text-responsive-sm text-muted-foreground">Total Reports</div>
               </div>
             </CardContent>
           </Card>

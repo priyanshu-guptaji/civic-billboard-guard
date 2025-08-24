@@ -8,57 +8,73 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 248 250 252;
-    --foreground: 203 24% 12%;
+    /* Beautiful gradient backgrounds */
+    --background: 240 10% 3.9%;
+    --background-secondary: 240 6% 10%;
+    --foreground: 0 0% 98%;
 
-    --card: 255 255 255;
-    --card-foreground: 203 24% 12%;
+    /* Elegant card system */
+    --card: 240 10% 3.9%;
+    --card-secondary: 240 6% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 255 255 255;
-    --popover-foreground: 203 24% 12%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 220 90% 50%;
-    --primary-foreground: 255 255 255;
+    /* Vibrant primary theme - Electric Blue */
+    --primary: 217 91% 60%;
+    --primary-glow: 217 91% 70%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 20% 95%;
-    --secondary-foreground: 220 20% 20%;
+    /* Sophisticated secondary */
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 15% 96%;
-    --muted-foreground: 220 10% 45%;
+    /* Refined muted tones */
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 64%;
 
-    --accent: 160 70% 45%;
-    --accent-foreground: 255 255 255;
+    /* Vibrant accent - Cyan */
+    --accent: 185 100% 45%;
+    --accent-glow: 185 100% 55%;
+    --accent-foreground: 240 10% 3.9%;
 
-    --destructive: 15 90% 55%;
-    --destructive-foreground: 255 255 255;
+    /* Status colors with personality */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --warning: 35 95% 55%;
-    --warning-foreground: 255 255 255;
+    --warning: 38 92% 50%;
+    --warning-foreground: 240 10% 3.9%;
 
-    --success: 140 70% 45%;
-    --success-foreground: 255 255 255;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 220 90% 50%;
+    /* Elegant borders and inputs */
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Beautiful gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(185 100% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(240 4% 16%), hsl(240 6% 10%));
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60% / 0.1), hsl(185 100% 45% / 0.1));
+    
+    /* Elegant shadows */
+    --shadow-elegant: 0 25px 50px -12px hsl(240 10% 3.9% / 0.25);
+    --shadow-glow: 0 0 50px hsl(217 91% 60% / 0.3);
+    --shadow-card: 0 4px 6px -1px hsl(240 10% 3.9% / 0.1), 0 2px 4px -1px hsl(240 10% 3.9% / 0.06);
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    /* Sidebar theme */
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
@@ -107,5 +123,117 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: var(--gradient-secondary);
+  }
+}
+
+@layer components {
+  /* Beautiful card variants */
+  .card-gradient {
+    background: var(--gradient-secondary);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-glass {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  /* Hero gradient background */
+  .hero-gradient {
+    background: var(--gradient-hero);
+    backdrop-filter: blur(20px);
+  }
+
+  /* Button glow effects */
+  .btn-glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+    transition: all 0.3s ease;
+  }
+
+  .btn-glow:hover {
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  /* Text gradients */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Responsive container improvements */
+  .container-responsive {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1400px;
+  }
+
+  /* Enhanced animations */
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.5s ease-out;
+  }
+}
+
+@layer utilities {
+  /* Responsive text utilities */
+  .text-responsive-xs { @apply text-xs sm:text-sm; }
+  .text-responsive-sm { @apply text-sm sm:text-base; }
+  .text-responsive-base { @apply text-base sm:text-lg; }
+  .text-responsive-lg { @apply text-lg sm:text-xl; }
+  .text-responsive-xl { @apply text-xl sm:text-2xl; }
+  .text-responsive-2xl { @apply text-2xl sm:text-3xl; }
+  .text-responsive-3xl { @apply text-3xl sm:text-4xl lg:text-5xl; }
+
+  /* Responsive spacing */
+  .space-responsive { @apply space-y-4 sm:space-y-6 lg:space-y-8; }
+  .gap-responsive { @apply gap-4 sm:gap-6 lg:gap-8; }
+  .p-responsive { @apply p-4 sm:p-6 lg:p-8; }
+  .py-responsive { @apply py-8 sm:py-12 lg:py-16; }
+  .px-responsive { @apply px-4 sm:px-6 lg:px-8; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }

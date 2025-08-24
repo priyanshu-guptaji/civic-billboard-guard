@@ -49,37 +49,39 @@ const Index = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden min-h-[80vh] flex items-center">
         <div className="absolute inset-0">
           <img 
             src={heroImage} 
             alt="Smart city billboard compliance monitoring with AR and AI technology"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-primary/80"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-accent/70"></div>
         </div>
-        <div className="relative container mx-auto px-4 py-24 md:py-32">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            <Badge className="mb-6 bg-white/20 text-white border-white/30">
+        <div className="relative container-responsive">
+          <div className="max-w-5xl mx-auto text-center text-white animate-fade-in-up">
+            <Badge className="mb-6 bg-white/20 text-white border-white/30 backdrop-blur-sm">
               <Shield className="h-4 w-4 mr-2" />
               AI-Powered Civic Enforcement
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-responsive-3xl font-bold mb-6 leading-tight">
               Billboard Compliance
-              <span className="block text-accent">& Enforcement Solution</span>
+              <span className="block text-gradient bg-gradient-to-r from-accent to-accent-glow bg-clip-text text-transparent">
+                & Enforcement Solution
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
+            <p className="text-responsive-lg mb-8 text-white/90 max-w-4xl mx-auto leading-relaxed">
               Transform urban compliance with AI detection, AR verification, and citizen-powered reporting 
               for safer, compliant cities.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
+              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 btn-glow">
                 <Link to="/report">
                   <Camera className="h-5 w-5 mr-2" />
                   Start Reporting
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+              <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
                 <Link to="/dashboard">
                   <BarChart3 className="h-5 w-5 mr-2" />
                   View Dashboard
@@ -91,14 +93,14 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="py-responsive bg-gradient-secondary">
+        <div className="container-responsive">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-responsive">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">{stat.number}</div>
-                <div className="font-medium text-foreground">{stat.label}</div>
-                <div className="text-sm text-muted-foreground">{stat.sublabel}</div>
+              <div key={index} className="text-center animate-scale-in card-glass p-6 rounded-xl">
+                <div className="text-responsive-3xl font-bold text-gradient mb-2">{stat.number}</div>
+                <div className="font-medium text-foreground text-responsive-base">{stat.label}</div>
+                <div className="text-responsive-sm text-muted-foreground">{stat.sublabel}</div>
               </div>
             ))}
           </div>
@@ -106,30 +108,30 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section className="py-responsive">
+        <div className="container-responsive">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="text-responsive-3xl font-bold text-foreground mb-4">
               Advanced Technology Stack
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-responsive-lg text-muted-foreground max-w-4xl mx-auto leading-relaxed">
               Combining cutting-edge AI, AR, and civic technology to revolutionize billboard compliance monitoring
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-responsive max-w-7xl mx-auto">
             {features.map((feature, index) => (
-              <Card key={index} className="border-border hover:shadow-lg transition-shadow">
+              <Card key={index} className="card-glass border-border hover:shadow-glow transition-all duration-300 animate-scale-in">
                 <CardHeader>
                   <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-muted rounded-lg">
+                    <div className="p-4 bg-gradient-secondary rounded-xl shadow-card">
                       {feature.icon}
                     </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    <CardTitle className="text-responsive-xl">{feature.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base leading-relaxed">
+                  <CardDescription className="text-responsive-base leading-relaxed text-muted-foreground">
                     {feature.description}
                   </CardDescription>
                 </CardContent>

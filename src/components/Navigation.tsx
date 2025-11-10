@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, Camera, BarChart3, Menu } from "lucide-react";
+import { Focus, Camera, BarChart3, Menu } from "lucide-react";
 import { useState } from "react";
 
 const Navigation = () => {
@@ -12,7 +12,7 @@ const Navigation = () => {
       <div className="container-responsive">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <Shield className="h-8 w-8 text-primary" />
+            <Focus className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold text-foreground">CivicGuard</span>
           </Link>
 

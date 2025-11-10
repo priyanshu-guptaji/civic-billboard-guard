@@ -268,7 +268,7 @@ const Index = () => {
               <span className="text-xl font-bold text-foreground">CivicGuard</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              Powered by AI • Built for safer cities • © 2024 CivicGuard
+              Powered by AI • Built for safer cities • © 2025 CivicGuard
             </div>
           </div>
         </div>

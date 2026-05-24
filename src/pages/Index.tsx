@@ -75,7 +75,7 @@ const Index = () => {
               for safer, compliant cities.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 btn-glow">
+              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 btn-glow hover:scale-105 transition-all duration-300">
                 <Link to="/report">
                   <Camera className="h-5 w-5 mr-2" />
                   Start Reporting

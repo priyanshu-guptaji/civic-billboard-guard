@@ -42,6 +42,14 @@ const Navigation = () => {
             >
               Authority Dashboard
             </Link>
+            <Link 
+              to="/community" 
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                location.pathname === "/community" ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              Community
+            </Link>
             <Button variant="default" size="sm">
               <Camera className="h-4 w-4 mr-2" />
               AR Scan
@@ -82,6 +90,13 @@ const Navigation = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Authority Dashboard
+            </Link>
+            <Link 
+              to="/community" 
+              className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Community
             </Link>
             <Button variant="default" size="sm" className="ml-3 mt-2">
               <Camera className="h-4 w-4 mr-2" />

@@ -8,8 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Camera, MapPin, Clock, Upload, Award, Zap } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { useToast } from "@/hooks/use-toast";
+import { POINT_STRUCTURE, getCurrentBadge } from "@/lib/gamification";
+import { useGamification } from "@/contexts/GamificationContext";
 
 const Report = () => {
+  const { currentUser, reportsCount, addPoints } = useGamification();
+  const userPoints = currentUser.points;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     location: "",
@@ -26,9 +30,10 @@ const Report = () => {
     // Simulate API call
     setTimeout(() => {
       toast({
-        title: "Report Submitted Successfully!",
+        title: `+${POINT_STRUCTURE.SUBMIT_REPORT} Points earned!`,
         description: "Your billboard violation report has been received and is being processed by AI.",
       });
+      addPoints(POINT_STRUCTURE.SUBMIT_REPORT);
       setIsSubmitting(false);
       setFormData({ location: "", description: "", violationType: "", photo: null });
     }, 2000);
@@ -65,7 +70,7 @@ const Report = () => {
               <CardContent className="flex items-center p-responsive">
                 <Award className="h-8 w-8 text-warning mr-3" />
                 <div>
-                  <div className="text-responsive-2xl font-bold text-gradient">247</div>
+                  <div className="text-responsive-2xl font-bold text-gradient">{userPoints}</div>
                   <div className="text-responsive-sm text-muted-foreground">Your Points</div>
                 </div>
               </CardContent>
@@ -74,7 +79,7 @@ const Report = () => {
               <CardContent className="flex items-center p-responsive">
                 <Zap className="h-8 w-8 text-success mr-3" />
                 <div>
-                  <div className="text-responsive-2xl font-bold text-gradient">12</div>
+                  <div className="text-responsive-2xl font-bold text-gradient">{reportsCount}</div>
                   <div className="text-responsive-sm text-muted-foreground">Reports This Month</div>
                 </div>
               </CardContent>
@@ -82,7 +87,7 @@ const Report = () => {
             <Card className="card-glass">
               <CardContent className="flex items-center justify-center p-responsive">
                 <Badge variant="secondary" className="text-responsive-sm bg-gradient-secondary">
-                  🥈 Silver Reporter
+                  {getCurrentBadge(userPoints).icon} {getCurrentBadge(userPoints).name}
                 </Badge>
               </CardContent>
             </Card>

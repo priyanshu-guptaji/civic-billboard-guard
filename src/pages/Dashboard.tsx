@@ -1,8 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, MapPin, AlertTriangle, CheckCircle, Clock, TrendingUp, Users, Camera } from "lucide-react";
+import { BarChart3, MapPin, AlertTriangle, CheckCircle, Clock, TrendingUp, Users, Camera, Activity } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const violationData = [
@@ -145,9 +146,17 @@ const Dashboard = () => {
                 <CardTitle className="text-lg">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start">
-                  <Camera className="h-4 w-4 mr-2" />
-                  Launch Field Inspector App
+                <Button className="w-full justify-start btn-glow" asChild>
+                  <Link to="/risk-scoring">
+                    <Activity className="h-4 w-4 mr-2 text-accent animate-pulse" />
+                    AI Risk Assessment Tool
+                  </Link>
+                </Button>
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Button variant="ghost" className="p-0 h-auto w-full justify-start font-normal">
+                    <Camera className="h-4 w-4 mr-2" />
+                    Launch Field Inspector App
+                  </Button>
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
                   <BarChart3 className="h-4 w-4 mr-2" />

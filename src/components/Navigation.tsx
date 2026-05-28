@@ -60,6 +60,14 @@ const Navigation = () => {
             >
               My Reports
             </Link>
+            <Link 
+              to="/risk-scoring" 
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                location.pathname === "/risk-scoring" ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              AI Risk Assessment
+            </Link>
 
             <Button
               variant="ghost"
@@ -142,6 +150,13 @@ const Navigation = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               My Reports
+            </Link>
+            <Link 
+              to="/risk-scoring" 
+              className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              AI Risk Assessment
             </Link>
             <Button variant="default" size="sm" className="ml-3 mt-2">
               <Camera className="h-4 w-4 mr-2" />

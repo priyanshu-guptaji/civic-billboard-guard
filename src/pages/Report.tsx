@@ -11,11 +11,12 @@ import Navigation from "@/components/Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { POINT_STRUCTURE, getCurrentBadge } from "@/lib/gamification";
 import { useGamification } from "@/contexts/GamificationContext";
-import { useReports } from "@/contexts/ReportsContext";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { listReports, reportStatusBadgeVariant, submitReport } from "@/lib/reports";
+import { ReportStatusTimeline } from "@/components/ReportStatusTimeline";
 
 const Report = () => {
   const { currentUser, reportsCount, addPoints } = useGamification();
-  const { reports, addReport } = useReports();
   const userPoints = currentUser.points;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,27 +26,32 @@ const Report = () => {
     photo: null as File | null
   });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const typeLabel = violationTypes.find(t => t.id === formData.violationType)?.label || "Unauthorized Billboard";
-      addReport({
+    const selectedType = violationTypes.find((t) => t.id === formData.violationType);
+
+    try {
+      await submitMutation.mutateAsync({
+        reporterId: currentUser.id,
         location: formData.location,
-        type: typeLabel,
+        description: formData.description,
+        violationTypeId: formData.violationType || "other",
+        violationTypeLabel: selectedType?.label ?? "Other",
+        pointsAwarded: POINT_STRUCTURE.SUBMIT_REPORT,
       });
 
       toast({
         title: `+${POINT_STRUCTURE.SUBMIT_REPORT} Points earned!`,
-        description: "Your billboard violation report has been received and is being processed by AI.",
+        description: "Your report was submitted. You can track its status below.",
       });
       addPoints(POINT_STRUCTURE.SUBMIT_REPORT);
-      setIsSubmitting(false);
       setFormData({ location: "", description: "", violationType: "", photo: null });
-    }, 2000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const violationTypes = [
@@ -56,6 +62,21 @@ const Report = () => {
     { id: "blocking", label: "Blocks Traffic Signals", icon: "🚦" },
     { id: "unsafe", label: "Safety Hazard", icon: "⚡" }
   ];
+
+  const reportsQueryKey = ["reports", currentUser.id];
+
+  const reportsQuery = useQuery({
+    queryKey: reportsQueryKey,
+    queryFn: () => listReports({ reporterId: currentUser.id }),
+    refetchInterval: 5000,
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: submitReport,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: reportsQueryKey });
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -257,24 +278,30 @@ const Report = () => {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {reports.slice(0, 3).map((report) => (
-                  <Link key={report.id} to="/my-reports" className="block">
-                    <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                      <div>
-                        <div className="font-medium text-foreground">{report.location}</div>
-                        <div className="text-sm text-muted-foreground">{report.type}</div>
+              {reportsQuery.isLoading ? (
+                <div className="text-sm text-muted-foreground">Loading your reports…</div>
+              ) : reportsQuery.data && reportsQuery.data.length > 0 ? (
+                <div className="space-y-4">
+                  {reportsQuery.data.slice(0, 3).map((report) => (
+                    <Link key={report.id} to="/my-reports" className="block">
+                      <div className="p-4 border border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <div className="font-medium text-foreground">{report.location}</div>
+                            <div className="text-sm text-muted-foreground">{report.violationTypeLabel}</div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={reportStatusBadgeVariant(report.status)}>{report.status}</Badge>
+                            <div className="text-sm text-warning font-medium">+{report.pointsAwarded} pts</div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <Badge variant={report.status === "Resolved" ? "default" : "secondary"}>
-                          {report.status}
-                        </Badge>
-                        <div className="text-sm text-warning font-medium">+{report.points} pts</div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">No reports yet. Submit one above to start tracking status.</div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -1,11 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Focus, Camera, BarChart3, Menu } from "lucide-react";
+import { Focus, Camera, BarChart3, Menu, Sun, Moon } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Navigation = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50">
@@ -58,6 +60,20 @@ const Navigation = () => {
             >
               My Reports
             </Link>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-md transition-all duration-300 hover:bg-secondary text-muted-foreground hover:text-foreground"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-500 hover:rotate-45 text-yellow-500" />
+              ) : (
+                <Moon className="h-[1.2rem] w-[1.2rem] transition-transform duration-500 hover:-rotate-12 text-primary" />
+              )}
+            </Button>
             <Button variant="default" size="sm">
               <Camera className="h-4 w-4 mr-2" />
               AR Scan
@@ -65,14 +81,28 @@ const Navigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center space-x-2 md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-md transition-all duration-300 hover:bg-secondary text-muted-foreground hover:text-foreground"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-[1.2rem] w-[1.2rem] text-yellow-500" />
+              ) : (
+                <Moon className="h-[1.2rem] w-[1.2rem] text-primary" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}

@@ -8,7 +8,9 @@ import Report from "./pages/Report";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Community from "./pages/Community";
+import MyReports from "./pages/MyReports";
 import { GamificationProvider } from "./contexts/GamificationContext";
+import { ReportsProvider } from "./contexts/ReportsContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -18,18 +20,21 @@ const App = () => (
     <ThemeProvider>
       <TooltipProvider>
         <GamificationProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/report" element={<Report />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/community" element={<Community />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <ReportsProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/report" element={<Report />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/my-reports" element={<MyReports />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </ReportsProvider>
         </GamificationProvider>
       </TooltipProvider>
     </ThemeProvider>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,6 @@ const Report = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     const selectedType = violationTypes.find((t) => t.id === formData.violationType);
 
     try {
@@ -268,35 +268,35 @@ const Report = () => {
 
           {/* Recent Activity */}
           <Card className="mt-8">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center">
                 <Clock className="h-5 w-5 mr-2 text-primary" />
                 Your Recent Reports
               </CardTitle>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/my-reports">View All & Track</Link>
+              </Button>
             </CardHeader>
             <CardContent>
               {reportsQuery.isLoading ? (
                 <div className="text-sm text-muted-foreground">Loading your reports…</div>
               ) : reportsQuery.data && reportsQuery.data.length > 0 ? (
                 <div className="space-y-4">
-                  {reportsQuery.data.map((report) => (
-                    <div key={report.id} className="p-4 border border-border rounded-lg">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <div className="font-medium text-foreground">{report.location}</div>
-                          <div className="text-sm text-muted-foreground">{report.violationTypeLabel}</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Badge variant={reportStatusBadgeVariant(report.status)}>{report.status}</Badge>
-                          <div className="text-sm text-warning font-medium">+{report.pointsAwarded} pts</div>
+                  {reportsQuery.data.slice(0, 3).map((report) => (
+                    <Link key={report.id} to="/my-reports" className="block">
+                      <div className="p-4 border border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <div className="font-medium text-foreground">{report.location}</div>
+                            <div className="text-sm text-muted-foreground">{report.violationTypeLabel}</div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={reportStatusBadgeVariant(report.status)}>{report.status}</Badge>
+                            <div className="text-sm text-warning font-medium">+{report.pointsAwarded} pts</div>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="mt-4">
-                        <div className="text-sm font-medium text-foreground mb-2">Status Timeline</div>
-                        <ReportStatusTimeline status={report.status} />
-                      </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               ) : (

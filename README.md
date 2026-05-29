@@ -39,8 +39,7 @@ This project enables **citizens, authorities, and city planners** to collaborati
 Clone the repository and start the development server:
 
 ```bash
-git clone https://github.com/your-username/civic-billboard-compliance.git
-cd civic-billboard-compliance
+git clone https://github.com/<your-username>/civic-billboard-guard.git
 npm install
 npm run dev
 ```
@@ -48,7 +47,7 @@ npm run dev
 App will run on:
 
 ```
-http://localhost:5173
+http://localhost:8080
 ```
 
 ---

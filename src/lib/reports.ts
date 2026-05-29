@@ -30,7 +30,8 @@ export interface CreateReportInput {
   pointsAwarded: number;
 }
 
-const STORAGE_KEY = "civic_reports_v1";
+export const STORAGE_KEY = "civic_reports_v1";
+
 
 export const REPORT_STATUSES: ReportStatus[] = [
   "Submitted",
@@ -71,7 +72,7 @@ const generateId = () => {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 };
 
-const loadAllReports = (): CivicReport[] => {
+export const loadAllReports = (): CivicReport[] => {
   const raw = safeJsonParse<CivicReport[]>(localStorage.getItem(STORAGE_KEY));
   if (raw && Array.isArray(raw)) return raw;
 
@@ -128,12 +129,15 @@ const loadAllReports = (): CivicReport[] => {
     },
   ];
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+  saveAllReports(seeded);
   return seeded;
 };
 
 const saveAllReports = (reports: CivicReport[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("sync-reports"));
+  }
 };
 
 const advanceStatus = (status: ReportStatus): ReportStatus => {
@@ -193,7 +197,7 @@ export const reportStatusBadgeVariant = (
   }
 };
 
-export const listReports = async (opts?: { reporterId?: string }) => {
+export const getActiveReports = (reporterId?: string): CivicReport[] => {
   const now = Date.now();
   const reports = loadAllReports();
 
@@ -201,10 +205,16 @@ export const listReports = async (opts?: { reporterId?: string }) => {
   const changed = updated.some((r, idx) => r.updatedAt !== reports[idx]?.updatedAt || r.status !== reports[idx]?.status);
   if (changed) saveAllReports(updated);
 
-  const filtered = opts?.reporterId ? updated.filter((r) => r.reporterId === opts.reporterId) : updated;
+  const filtered = reporterId ? updated.filter((r) => r.reporterId === reporterId) : updated;
 
   // newest first
   filtered.sort((a, b) => b.createdAt - a.createdAt);
+
+  return filtered;
+};
+
+export const listReports = async (opts?: { reporterId?: string }) => {
+  const filtered = getActiveReports(opts?.reporterId);
 
   // Simulate network latency.
   await new Promise((resolve) => setTimeout(resolve, 250));

@@ -4,16 +4,26 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, MapPin, AlertTriangle, CheckCircle, Clock, TrendingUp, Users, Camera, Activity } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Dashboard = () => {
-  const violationData = [
+  const [selectedViolation, setSelectedViolation] = useState<any>(null);
+  const [violationData, setViolationData] = useState([
     { location: "MG Road, Bangalore", type: "Unauthorized", status: "Pending", severity: "High", reported: "2 hours ago" },
     { location: "Brigade Road Junction", type: "Oversized", status: "In Progress", severity: "Medium", reported: "4 hours ago" },
     { location: "Commercial Street", type: "Safety Hazard", status: "Resolved", severity: "High", reported: "1 day ago" },
     { location: "Residency Road", type: "Inappropriate Content", status: "Under Review", severity: "Medium", reported: "3 hours ago" },
     { location: "UB City Mall", type: "Blocking Signals", status: "Pending", severity: "Critical", reported: "1 hour ago" },
-  ];
-
+  ]);
   const stats = {
     totalReports: 1247,
     activeViolations: 89,
@@ -37,6 +47,43 @@ const Dashboard = () => {
       case "Medium": return "secondary";
       default: return "secondary";
     }
+  };
+  const markAsResolved = () => {
+    if (!selectedViolation) return;
+
+    const updatedViolations = violationData.map((violation) =>
+      violation.location === selectedViolation.location
+        ? { ...violation, status: "Resolved" }
+        : violation
+    );
+
+    setViolationData(updatedViolations);
+
+    setSelectedViolation({
+      ...selectedViolation,
+      status: "Resolved",
+    });
+
+    toast.success("Violation marked as resolved successfully");
+  };
+
+  const updateViolationStatus = (newStatus: string) => {
+    if (!selectedViolation) return;
+
+    const updatedViolations = violationData.map((violation) =>
+      violation.location === selectedViolation.location
+        ? { ...violation, status: newStatus }
+        : violation
+    );
+
+    setViolationData(updatedViolations);
+
+    setSelectedViolation({
+      ...selectedViolation,
+      status: newStatus,
+    });
+
+    toast.success(`Status changed to ${newStatus}`);
   };
 
   return (
@@ -127,7 +174,11 @@ const Dashboard = () => {
                         <Badge variant={getStatusColor(violation.status)}>
                           {violation.status}
                         </Badge>
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedViolation(violation)}
+                        >
                           View Details
                         </Button>
                       </div>
@@ -152,11 +203,9 @@ const Dashboard = () => {
                     AI Risk Assessment Tool
                   </Link>
                 </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <Button variant="ghost" className="p-0 h-auto w-full justify-start font-normal">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Launch Field Inspector App
-                  </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Camera className="h-4 w-4 mr-2" />
+                  Launch Field Inspector App
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -258,6 +307,103 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+        <Dialog
+          open={!!selectedViolation}
+          onOpenChange={() => setSelectedViolation(null)}
+        >
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Violation Details</DialogTitle>
+                <DialogDescription>
+                  Detailed information about the selected violation report.
+                </DialogDescription>
+            </DialogHeader>
+
+            {selectedViolation && (
+              <div className="space-y-4 mt-4">
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Location</p>
+                  <p className="font-medium">{selectedViolation.location}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Violation Type</p>
+                    <p>{selectedViolation.type}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-muted-foreground">Severity</p>
+                    <Badge>{selectedViolation.severity}</Badge>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Status</p>
+                    <Badge>{selectedViolation.status}</Badge>
+                  </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Reported</p>
+                  <p>{selectedViolation.reported}</p>
+                </div>
+              </div>
+
+              <div className="rounded-lg border p-4 bg-muted/20">
+                <h4 className="font-medium mb-3">AI Assessment</h4>
+
+              <div className="flex justify-between text-sm">
+                <span>Detection Confidence</span>
+                <span className="font-semibold text-green-500">
+                  94%
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm mt-2">
+                <span>Risk Level</span>
+                <span className="font-semibold text-red-500">
+                  {selectedViolation.severity}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">
+                Description
+              </p>
+
+              <div className="rounded-md border p-3 text-sm">
+                Billboard reported for compliance review.
+                Additional inspection may be required.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => updateViolationStatus("Under Review")}
+              >
+                Assign Review
+              </Button>
+
+              <Button
+                variant="destructive"
+                onClick={() => updateViolationStatus("Escalated")}
+              >
+                Escalate
+              </Button>
+
+            <Button onClick={markAsResolved}>
+              Mark Resolved
+            </Button>
+          </div>
+
+        </div>
+      )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -1,11 +1,29 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, MapPin, AlertTriangle, CheckCircle, Clock, TrendingUp, Users, Camera, Activity } from "lucide-react";
+import {
+  BarChart3,
+  MapPin,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  TrendingUp,
+  Users,
+  Camera,
+  Activity,
+} from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import {
   Dialog,
@@ -18,34 +36,72 @@ import {
 const Dashboard = () => {
   const [selectedViolation, setSelectedViolation] = useState<any>(null);
   const [violationData, setViolationData] = useState([
-    { location: "MG Road, Bangalore", type: "Unauthorized", status: "Pending", severity: "High", reported: "2 hours ago" },
-    { location: "Brigade Road Junction", type: "Oversized", status: "In Progress", severity: "Medium", reported: "4 hours ago" },
-    { location: "Commercial Street", type: "Safety Hazard", status: "Resolved", severity: "High", reported: "1 day ago" },
-    { location: "Residency Road", type: "Inappropriate Content", status: "Under Review", severity: "Medium", reported: "3 hours ago" },
-    { location: "UB City Mall", type: "Blocking Signals", status: "Pending", severity: "Critical", reported: "1 hour ago" },
+    {
+      location: "MG Road, Bangalore",
+      type: "Unauthorized",
+      status: "Pending",
+      severity: "High",
+      reported: "2 hours ago",
+    },
+    {
+      location: "Brigade Road Junction",
+      type: "Oversized",
+      status: "In Progress",
+      severity: "Medium",
+      reported: "4 hours ago",
+    },
+    {
+      location: "Commercial Street",
+      type: "Safety Hazard",
+      status: "Resolved",
+      severity: "High",
+      reported: "1 day ago",
+    },
+    {
+      location: "Residency Road",
+      type: "Inappropriate Content",
+      status: "Under Review",
+      severity: "Medium",
+      reported: "3 hours ago",
+    },
+    {
+      location: "UB City Mall",
+      type: "Blocking Signals",
+      status: "Pending",
+      severity: "Critical",
+      reported: "1 hour ago",
+    },
   ]);
   const stats = {
     totalReports: 1247,
     activeViolations: 89,
     resolvedToday: 23,
-    citizenReporters: 3456
+    citizenReporters: 3456,
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Resolved": return "default";
-      case "In Progress": return "secondary";
-      case "Pending": return "destructive";
-      default: return "secondary";
+      case "Resolved":
+        return "default";
+      case "In Progress":
+        return "secondary";
+      case "Pending":
+        return "destructive";
+      default:
+        return "secondary";
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "Critical": return "destructive";
-      case "High": return "destructive";
-      case "Medium": return "secondary";
-      default: return "secondary";
+      case "Critical":
+        return "destructive";
+      case "High":
+        return "destructive";
+      case "Medium":
+        return "secondary";
+      default:
+        return "secondary";
     }
   };
   const markAsResolved = () => {
@@ -54,7 +110,7 @@ const Dashboard = () => {
     const updatedViolations = violationData.map((violation) =>
       violation.location === selectedViolation.location
         ? { ...violation, status: "Resolved" }
-        : violation
+        : violation,
     );
 
     setViolationData(updatedViolations);
@@ -73,7 +129,7 @@ const Dashboard = () => {
     const updatedViolations = violationData.map((violation) =>
       violation.location === selectedViolation.location
         ? { ...violation, status: newStatus }
-        : violation
+        : violation,
     );
 
     setViolationData(updatedViolations);
@@ -85,18 +141,128 @@ const Dashboard = () => {
 
     toast.success(`Status changed to ${newStatus}`);
   };
+  const generatePDFReport = () => {
+    const doc = new jsPDF();
+
+    const currentDate = new Date().toLocaleString();
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(41, 98, 255);
+    doc.text("CivicGuard", 14, 18);
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
+    doc.text("Violation Analytics Report", 14, 30);
+
+    doc.setFontSize(10);
+    doc.text(`Generated: ${currentDate}`, 14, 38);
+
+    doc.setLineWidth(0.5);
+    doc.line(14, 42, 195, 42);
+
+    // Statistics
+    doc.setFontSize(12);
+    doc.text(`Total Reports: ${stats.totalReports}`, 14, 55);
+    doc.text(`Active Violations: ${stats.activeViolations}`, 14, 63);
+    doc.text(`Resolved Today: ${stats.resolvedToday}`, 14, 71);
+    doc.text(`Citizen Reporters: ${stats.citizenReporters}`, 14, 79);
+
+    // Analytics
+    const highSeverityCount = violationData.filter(
+      (v) => v.severity === "High" || v.severity === "Critical",
+    ).length;
+
+    const pendingCount = violationData.filter(
+      (v) => v.status === "Pending",
+    ).length;
+
+    const resolvedCount = violationData.filter(
+      (v) => v.status === "Resolved",
+    ).length;
+
+    const reportId = `CG-${Date.now().toString().slice(-6)}`;
+
+    doc.setFillColor(245, 245, 245);
+    doc.rect(14, 90, 180, 28, "F");
+
+    doc.setFontSize(12);
+
+    doc.text(`High/Critical Violations: ${highSeverityCount}`, 18, 100);
+
+    doc.text(`Pending Cases: ${pendingCount}`, 18, 108);
+
+    doc.text(`Resolved Cases: ${resolvedCount}`, 110, 100);
+
+    doc.text(`Report ID: ${reportId}`, 110, 108);
+
+    // Violations Table
+    autoTable(doc, {
+      startY: 125,
+
+      head: [["Location", "Type", "Severity", "Status", "Reported"]],
+
+      body: violationData.map((violation) => [
+        violation.location,
+        violation.type,
+        violation.severity,
+        violation.status,
+        violation.reported,
+      ]),
+
+      headStyles: {
+        fillColor: [41, 98, 255],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
+      },
+
+      styles: {
+        fontSize: 10,
+      },
+    });
+
+    
+    // Footer
+    const pageHeight = doc.internal.pageSize.height;
+    const pageCount = doc.getNumberOfPages();
+
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+
+      doc.setFontSize(10);
+
+      doc.text(
+        "Generated by CivicGuard Authority Dashboard",
+        14,
+        pageHeight - 10,
+      );
+
+      doc.text(`Page ${i} of ${pageCount}`, 170, pageHeight - 10);
+    }
+
+    // Download
+    doc.save("civicguard-violation-report.pdf");
+
+    toast.success("PDF report downloaded successfully");
+
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="container-responsive py-responsive">
         <div className="mb-8 animate-fade-in-up">
           <h1 className="text-responsive-3xl font-bold text-foreground mb-2">
             Authority Dashboard
           </h1>
           <p className="text-muted-foreground text-responsive-lg leading-relaxed max-w-4xl">
-            Monitor billboard compliance and manage violation reports across the city
+            Monitor billboard compliance and manage violation reports across the
+            city
           </p>
         </div>
 
@@ -106,38 +272,54 @@ const Dashboard = () => {
             <CardContent className="flex items-center p-6">
               <BarChart3 className="h-8 w-8 text-primary mr-4" />
               <div>
-                <div className="text-responsive-2xl font-bold text-gradient">{stats.totalReports.toLocaleString()}</div>
-                <div className="text-responsive-sm text-muted-foreground">Total Reports</div>
+                <div className="text-responsive-2xl font-bold text-gradient">
+                  {stats.totalReports.toLocaleString()}
+                </div>
+                <div className="text-responsive-sm text-muted-foreground">
+                  Total Reports
+                </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="flex items-center p-6">
               <AlertTriangle className="h-8 w-8 text-warning mr-4" />
               <div>
-                <div className="text-2xl font-bold text-foreground">{stats.activeViolations}</div>
-                <div className="text-sm text-muted-foreground">Active Violations</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {stats.activeViolations}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Active Violations
+                </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="flex items-center p-6">
               <CheckCircle className="h-8 w-8 text-success mr-4" />
               <div>
-                <div className="text-2xl font-bold text-foreground">{stats.resolvedToday}</div>
-                <div className="text-sm text-muted-foreground">Resolved Today</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {stats.resolvedToday}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Resolved Today
+                </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="flex items-center p-6">
               <Users className="h-8 w-8 text-accent mr-4" />
               <div>
-                <div className="text-2xl font-bold text-foreground">{stats.citizenReporters.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Citizen Reporters</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {stats.citizenReporters.toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Citizen Reporters
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -153,22 +335,35 @@ const Dashboard = () => {
                   Recent Violation Reports
                 </CardTitle>
                 <CardDescription>
-                  Latest billboard violations reported by citizens and AI detection
+                  Latest billboard violations reported by citizens and AI
+                  detection
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {violationData.map((violation, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <div className="font-medium text-foreground">{violation.location}</div>
-                          <Badge variant={getSeverityColor(violation.severity)} className="text-xs">
+                          <div className="font-medium text-foreground">
+                            {violation.location}
+                          </div>
+                          <Badge
+                            variant={getSeverityColor(violation.severity)}
+                            className="text-xs"
+                          >
                             {violation.severity}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground mb-1">{violation.type}</div>
-                        <div className="text-xs text-muted-foreground">{violation.reported}</div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          {violation.type}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {violation.reported}
+                        </div>
                       </div>
                       <div className="flex items-center space-x-3">
                         <Badge variant={getStatusColor(violation.status)}>
@@ -207,7 +402,11 @@ const Dashboard = () => {
                   <Camera className="h-4 w-4 mr-2" />
                   Launch Field Inspector App
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={generatePDFReport}
+                >
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Generate Report
                 </Button>
@@ -233,19 +432,27 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Unauthorized Billboards</span>
+                    <span className="text-sm text-foreground">
+                      Unauthorized Billboards
+                    </span>
                     <Badge variant="destructive">+15%</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Safety Hazards</span>
+                    <span className="text-sm text-foreground">
+                      Safety Hazards
+                    </span>
                     <Badge variant="destructive">+8%</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Oversized Displays</span>
+                    <span className="text-sm text-foreground">
+                      Oversized Displays
+                    </span>
                     <Badge variant="secondary">-3%</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Blocking Signals</span>
+                    <span className="text-sm text-foreground">
+                      Blocking Signals
+                    </span>
                     <Badge variant="destructive">+12%</Badge>
                   </div>
                 </div>
@@ -260,20 +467,36 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Accuracy Rate</span>
-                    <span className="text-sm font-medium text-success">94.7%</span>
+                    <span className="text-sm text-muted-foreground">
+                      Accuracy Rate
+                    </span>
+                    <span className="text-sm font-medium text-success">
+                      94.7%
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Photos Processed</span>
-                    <span className="text-sm font-medium text-foreground">2,347</span>
+                    <span className="text-sm text-muted-foreground">
+                      Photos Processed
+                    </span>
+                    <span className="text-sm font-medium text-foreground">
+                      2,347
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Auto-flagged</span>
-                    <span className="text-sm font-medium text-warning">156</span>
+                    <span className="text-sm text-muted-foreground">
+                      Auto-flagged
+                    </span>
+                    <span className="text-sm font-medium text-warning">
+                      156
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Processing Time</span>
-                    <span className="text-sm font-medium text-accent">2.3s avg</span>
+                    <span className="text-sm text-muted-foreground">
+                      Processing Time
+                    </span>
+                    <span className="text-sm font-medium text-accent">
+                      2.3s avg
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -296,13 +519,14 @@ const Dashboard = () => {
             <div className="bg-muted rounded-lg h-96 flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">Interactive Map</h3>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  Interactive Map
+                </h3>
                 <p className="text-muted-foreground mb-4">
-                  Real-time heatmap showing violation hotspots and enforcement areas
+                  Real-time heatmap showing violation hotspots and enforcement
+                  areas
                 </p>
-                <Button variant="outline">
-                  Launch Full Map View
-                </Button>
+                <Button variant="outline">Launch Full Map View</Button>
               </div>
             </div>
           </CardContent>
@@ -314,14 +538,13 @@ const Dashboard = () => {
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Violation Details</DialogTitle>
-                <DialogDescription>
-                  Detailed information about the selected violation report.
-                </DialogDescription>
+              <DialogDescription>
+                Detailed information about the selected violation report.
+              </DialogDescription>
             </DialogHeader>
 
             {selectedViolation && (
               <div className="space-y-4 mt-4">
-
                 <div>
                   <p className="text-sm text-muted-foreground">Location</p>
                   <p className="font-medium">{selectedViolation.location}</p>
@@ -329,7 +552,9 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Violation Type</p>
+                    <p className="text-sm text-muted-foreground">
+                      Violation Type
+                    </p>
                     <p>{selectedViolation.type}</p>
                   </div>
 
@@ -345,63 +570,58 @@ const Dashboard = () => {
                     <Badge>{selectedViolation.status}</Badge>
                   </div>
 
+                  <div>
+                    <p className="text-sm text-muted-foreground">Reported</p>
+                    <p>{selectedViolation.reported}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border p-4 bg-muted/20">
+                  <h4 className="font-medium mb-3">AI Assessment</h4>
+
+                  <div className="flex justify-between text-sm">
+                    <span>Detection Confidence</span>
+                    <span className="font-semibold text-green-500">94%</span>
+                  </div>
+
+                  <div className="flex justify-between text-sm mt-2">
+                    <span>Risk Level</span>
+                    <span className="font-semibold text-red-500">
+                      {selectedViolation.severity}
+                    </span>
+                  </div>
+                </div>
+
                 <div>
-                  <p className="text-sm text-muted-foreground">Reported</p>
-                  <p>{selectedViolation.reported}</p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Description
+                  </p>
+
+                  <div className="rounded-md border p-3 text-sm">
+                    Billboard reported for compliance review. Additional
+                    inspection may be required.
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => updateViolationStatus("Under Review")}
+                  >
+                    Assign Review
+                  </Button>
+
+                  <Button
+                    variant="destructive"
+                    onClick={() => updateViolationStatus("Escalated")}
+                  >
+                    Escalate
+                  </Button>
+
+                  <Button onClick={markAsResolved}>Mark Resolved</Button>
                 </div>
               </div>
-
-              <div className="rounded-lg border p-4 bg-muted/20">
-                <h4 className="font-medium mb-3">AI Assessment</h4>
-
-              <div className="flex justify-between text-sm">
-                <span>Detection Confidence</span>
-                <span className="font-semibold text-green-500">
-                  94%
-                </span>
-              </div>
-
-              <div className="flex justify-between text-sm mt-2">
-                <span>Risk Level</span>
-                <span className="font-semibold text-red-500">
-                  {selectedViolation.severity}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">
-                Description
-              </p>
-
-              <div className="rounded-md border p-3 text-sm">
-                Billboard reported for compliance review.
-                Additional inspection may be required.
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => updateViolationStatus("Under Review")}
-              >
-                Assign Review
-              </Button>
-
-              <Button
-                variant="destructive"
-                onClick={() => updateViolationStatus("Escalated")}
-              >
-                Escalate
-              </Button>
-
-            <Button onClick={markAsResolved}>
-              Mark Resolved
-            </Button>
-          </div>
-
-        </div>
-      )}
+            )}
           </DialogContent>
         </Dialog>
       </div>

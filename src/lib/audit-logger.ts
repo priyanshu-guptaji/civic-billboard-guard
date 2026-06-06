@@ -27,15 +27,15 @@ export interface AuditLogEntry {
     department?: string;
   };
   timestamp: Date;
-  oldValue?: any;
-  newValue?: any;
-  changes?: Record<string, { from: any; to: any }>;
+  oldValue?: unknown;
+  newValue?: unknown;
+  changes?: Record<string, { from: unknown; to: unknown }>;
   reason?: string;
   metadata?: {
     ipAddress?: string;
     userAgent?: string;
     sessionId?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

@@ -33,8 +33,17 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+interface Violation {
+  location: string;
+  type: string;
+  status: string;
+  severity: string;
+  reported: string;
+}
+
 const Dashboard = () => {
-  const [selectedViolation, setSelectedViolation] = useState<any>(null);
+  const [selectedViolation, setSelectedViolation] =
+  useState<Violation | null>(null);
   const [violationData, setViolationData] = useState([
     {
       location: "MG Road, Bangalore",

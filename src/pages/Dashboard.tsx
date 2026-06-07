@@ -24,7 +24,18 @@ import { useState } from "react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 import {
   Dialog,
   DialogContent,
@@ -42,8 +53,9 @@ interface Violation {
 }
 
 const Dashboard = () => {
-  const [selectedViolation, setSelectedViolation] =
-  useState<Violation | null>(null);
+  const [selectedViolation, setSelectedViolation] = useState<Violation | null>(
+    null,
+  );
   const [violationData, setViolationData] = useState([
     {
       location: "MG Road, Bangalore",
@@ -87,6 +99,44 @@ const Dashboard = () => {
     resolvedToday: 23,
     citizenReporters: 3456,
   };
+  const severityData = [
+    {
+      name: "Critical",
+      value: violationData.filter((v) => v.severity === "Critical").length,
+    },
+    {
+      name: "High",
+      value: violationData.filter((v) => v.severity === "High").length,
+    },
+    {
+      name: "Medium",
+      value: violationData.filter((v) => v.severity === "Medium").length,
+    },
+    {
+      name: "Low",
+      value: violationData.filter((v) => v.severity === "Low").length,
+    },
+  ];
+
+  const statusData = [
+    {
+      status: "Pending",
+      count: violationData.filter((v) => v.status === "Pending").length,
+    },
+    {
+      status: "Under Review",
+      count: violationData.filter((v) => v.status === "Under Review").length,
+    },
+    {
+      status: "In Progress",
+      count: violationData.filter((v) => v.status === "In Progress").length,
+    },
+    {
+      status: "Resolved",
+      count: violationData.filter((v) => v.status === "Resolved").length,
+    },
+  ];
+  const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e"];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -234,7 +284,6 @@ const Dashboard = () => {
       },
     });
 
-    
     // Footer
     const pageHeight = doc.internal.pageSize.height;
     const pageCount = doc.getNumberOfPages();
@@ -257,7 +306,6 @@ const Dashboard = () => {
     doc.save("civicguard-violation-report.pdf");
 
     toast.success("PDF report downloaded successfully");
-
   };
 
   return (
@@ -511,6 +559,75 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Violations by Severity</CardTitle>
+              <CardDescription>
+                Distribution of reported violations by severity level
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={severityData}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius={100}
+                      label
+                    >
+                      {severityData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+
+                    <Tooltip />
+
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Violations by Status</CardTitle>
+
+              <CardDescription>
+                Current distribution of violation statuses
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={statusData}>
+                    <XAxis dataKey="status" />
+
+                    <YAxis />
+
+                    <Tooltip />
+                    <Legend />
+
+                    <Bar
+                      dataKey="count"
+                      name="Violations"
+                      fill="#3b82f6"
+                      radius={[6, 6, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Violation Heatmap Placeholder */}

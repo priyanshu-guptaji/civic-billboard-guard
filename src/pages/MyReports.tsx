@@ -10,6 +10,8 @@ import { useReports, ReportData } from "@/contexts/ReportsContext";
 const MyReports = () => {
   const { reports } = useReports();
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     if (reports.length > 0 && !selectedReport) {
@@ -21,6 +23,18 @@ const MyReports = () => {
       }
     }
   }, [reports, selectedReport]);
+const filteredReports = reports.filter((report) => {
+  const matchesSearch =
+    report.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    report.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    report.type.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "All" || report.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,16 +55,37 @@ const MyReports = () => {
           {/* List of Reports */}
           <Card className="lg:col-span-1 flex flex-col h-[600px]">
             <CardHeader>
-              <CardTitle>History</CardTitle>
-              <CardDescription>Select a report to view its timeline.</CardDescription>
-            </CardHeader>
+  <CardTitle>History</CardTitle>
+  <CardDescription>
+    Select a report to view its timeline.
+  </CardDescription>
+
+  <input
+    type="text"
+    placeholder="Search reports..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-full mt-3 px-3 py-2 rounded-md border bg-background"
+  />
+
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    className="w-full mt-2 px-3 py-2 rounded-md border bg-background"
+  >
+    <option value="All">All Status</option>
+    <option value="Pending">Pending</option>
+    <option value="Under Review">Under Review</option>
+    <option value="Resolved">Resolved</option>
+  </select>
+</CardHeader>
             <CardContent className="flex-1 p-0 overflow-hidden">
               <ScrollArea className="h-full px-6 pb-6">
                 <div className="space-y-4">
                   {reports.length === 0 ? (
                     <div className="text-center text-muted-foreground p-4">No reports found.</div>
                   ) : (
-                    reports.map(report => (
+                filteredReports.map(report => (       
                       <div
                         key={report.id}
                         onClick={() => setSelectedReport(report)}

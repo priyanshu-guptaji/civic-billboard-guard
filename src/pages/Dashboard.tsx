@@ -136,6 +136,23 @@ const Dashboard = () => {
       count: violationData.filter((v) => v.status === "Resolved").length,
     },
   ];
+  const totalViolations = violationData.length;
+
+  const resolvedViolations = violationData.filter(
+    (v) => v.status === "Resolved",
+  ).length;
+
+  const pendingViolations = violationData.filter(
+    (v) => v.status === "Pending",
+  ).length;
+
+  const criticalViolations = violationData.filter(
+    (v) => v.severity === "Critical",
+  ).length;
+
+  const resolutionRate = Math.round(
+    (resolvedViolations / totalViolations) * 100,
+  );
   const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e"];
 
   const getStatusColor = (status: string) => {
@@ -559,6 +576,77 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Dashboard Summary Insights */}
+        <div className="mt-8 mb-4">
+          <h2 className="text-2xl font-bold">Analytics Overview</h2>
+
+          <p className="text-muted-foreground">
+            Quick insights derived from current violation reports
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">
+                Resolution Rate
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-green-500">
+                  {resolutionRate}%
+                </div>
+
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                  ↑ 5%
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">Pending Cases</div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-yellow-500">
+                  {pendingViolations}
+                </div>
+
+                <Badge variant="secondary">↓ 2</Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">
+                Critical Violations
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-red-500">
+                  {criticalViolations}
+                </div>
+
+                <Badge variant="destructive">Alert</Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">
+                Total Violations
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-primary">
+                  {totalViolations}
+                </div>
+
+                <Badge>Live</Badge>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">

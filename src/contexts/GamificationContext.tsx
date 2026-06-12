@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { MockUser, initialUser, POINT_STRUCTURE } from "@/lib/gamification";
+import { MockUser, initialUser, mockUsers, POINT_STRUCTURE } from "@/lib/gamification";
 
 interface GamificationContextType {
   users: MockUser[];
   currentUser: MockUser;
   reportsCount: number;
   addPoints: (points: number) => void;
+  toggleStar: (userId: string) => void;
 }
 
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
@@ -13,8 +14,23 @@ const GamificationContext = createContext<GamificationContextType | undefined>(u
 export const GamificationProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<MockUser[]>(() => {
     const saved = localStorage.getItem("gamification_users");
-    if (saved) return JSON.parse(saved);
-    return [initialUser];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Ensure all users have the new fields
+        return parsed.map((user: any) => ({
+          id: user.id,
+          name: user.name,
+          points: user.points,
+          avatarUrl: user.avatarUrl,
+          reportsCount: user.reportsCount ?? 0,
+          starredBy: user.starredBy ?? []
+        }));
+      } catch {
+        return mockUsers;
+      }
+    }
+    return mockUsers;
   });
   const [reportsCount, setReportsCount] = useState(() => {
     const saved = localStorage.getItem("gamification_reportsCount");
@@ -45,8 +61,23 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
     setReportsCount(prev => prev + 1);
   };
 
+  const toggleStar = (userId: string) => {
+    setUsers(prevUsers =>
+      prevUsers.map(user =>
+        user.id === userId
+          ? {
+              ...user,
+              starredBy: user.starredBy.includes(currentUserId)
+                ? user.starredBy.filter(id => id !== currentUserId)
+                : [...user.starredBy, currentUserId]
+            }
+          : user
+      )
+    );
+  };
+
   return (
-    <GamificationContext.Provider value={{ users, currentUser, reportsCount, addPoints }}>
+    <GamificationContext.Provider value={{ users, currentUser, reportsCount, addPoints, toggleStar }}>
       {children}
     </GamificationContext.Provider>
   );

@@ -17,14 +17,27 @@ import {
   Users,
   Camera,
   Activity,
+  FileText,
 } from "lucide-react";
+
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +57,18 @@ interface Violation {
 const Dashboard = () => {
   const [selectedViolation, setSelectedViolation] =
   useState<Violation | null>(null);
+  interface Violation {
+  location: string;
+  type: string;
+  status: string;
+  severity: string;
+  reported: string;
+}
+  const [selectedViolation, setSelectedViolation] = useState<Violation | null>(null);
+  const [violationData, setViolationData] = useState<Violation[]>([
+  const [selectedViolation, setSelectedViolation] = useState<Violation | null>(
+    null,
+  );
   const [violationData, setViolationData] = useState([
     {
       location: "MG Road, Bangalore",
@@ -87,6 +112,93 @@ const Dashboard = () => {
     resolvedToday: 23,
     citizenReporters: 3456,
   };
+  const severityData = [
+    {
+      name: "Critical",
+      value: violationData.filter((v) => v.severity === "Critical").length,
+    },
+    {
+      name: "High",
+      value: violationData.filter((v) => v.severity === "High").length,
+    },
+    {
+      name: "Medium",
+      value: violationData.filter((v) => v.severity === "Medium").length,
+    },
+    {
+      name: "Low",
+      value: violationData.filter((v) => v.severity === "Low").length,
+    },
+  ];
+
+  const statusData = [
+    {
+      status: "Pending",
+      count: violationData.filter((v) => v.status === "Pending").length,
+    },
+    {
+      status: "Under Review",
+      count: violationData.filter((v) => v.status === "Under Review").length,
+    },
+    {
+      status: "In Progress",
+      count: violationData.filter((v) => v.status === "In Progress").length,
+    },
+    {
+      status: "Resolved",
+      count: violationData.filter((v) => v.status === "Resolved").length,
+    },
+  ];
+  const totalViolations = violationData.length;
+
+  const resolvedViolations = violationData.filter(
+    (v) => v.status === "Resolved",
+  ).length;
+
+  const pendingViolations = violationData.filter(
+    (v) => v.status === "Pending",
+  ).length;
+
+  const criticalViolations = violationData.filter(
+    (v) => v.severity === "Critical",
+  ).length;
+
+  const resolutionRate = Math.round(
+    (resolvedViolations / totalViolations) * 100,
+  );
+  const recentActivities = [
+    {
+      title: "New Violation Report Submitted",
+      time: "10:15 AM",
+      status: "Report",
+    },
+    {
+      title: "AI Analysis Completed",
+      time: "10:45 AM",
+      status: "AI",
+    },
+    {
+      title: "Case Assigned for Review",
+      time: "11:10 AM",
+      status: "Review",
+    },
+    {
+      title: "Authority Inspection Scheduled",
+      time: "12:30 PM",
+      status: "Inspection",
+    },
+    {
+      title: "Violation Escalated",
+      time: "02:00 PM",
+      status: "Escalated",
+    },
+    {
+      title: "Case Resolved",
+      time: "04:15 PM",
+      status: "Resolved",
+    },
+  ];
+  const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e"];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -113,6 +225,20 @@ const Dashboard = () => {
         return "secondary";
     }
   };
+
+  const getActivityBadgeVariant = (status: string) => {
+    switch (status) {
+      case "Resolved":
+        return "default";
+
+      case "Escalated":
+        return "destructive";
+
+      default:
+        return "secondary";
+    }
+  };
+
   const markAsResolved = () => {
     if (!selectedViolation) return;
 
@@ -234,7 +360,6 @@ const Dashboard = () => {
       },
     });
 
-    
     // Footer
     const pageHeight = doc.internal.pageSize.height;
     const pageCount = doc.getNumberOfPages();
@@ -257,7 +382,6 @@ const Dashboard = () => {
     doc.save("civicguard-violation-report.pdf");
 
     toast.success("PDF report downloaded successfully");
-
   };
 
   return (
@@ -512,6 +636,192 @@ const Dashboard = () => {
             </Card>
           </div>
         </div>
+
+        {/* Dashboard Summary Insights */}
+        <div className="mt-8 mb-4">
+          <h2 className="text-2xl font-bold">Analytics Overview</h2>
+
+          <p className="text-muted-foreground">
+            Quick insights derived from current violation reports
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">
+                Resolution Rate
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-green-500">
+                  {resolutionRate}%
+                </div>
+
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                  ↑ 5%
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">Pending Cases</div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-yellow-500">
+                  {pendingViolations}
+                </div>
+
+                <Badge variant="secondary">↓ 2</Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">
+                Critical Violations
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-red-500">
+                  {criticalViolations}
+                </div>
+
+                <Badge variant="destructive">Alert</Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm text-muted-foreground">
+                Total Violations
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-3xl font-bold text-primary">
+                  {totalViolations}
+                </div>
+
+                <Badge>Live</Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Violations by Severity</CardTitle>
+              <CardDescription>
+                Distribution of reported violations by severity level
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={severityData}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius={100}
+                      label
+                    >
+                      {severityData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+
+                    <Tooltip />
+
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Violations by Status</CardTitle>
+
+              <CardDescription>
+                Current distribution of violation statuses
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={statusData}>
+                    <XAxis dataKey="status" />
+
+                    <YAxis />
+
+                    <Tooltip />
+                    <Legend />
+
+                    <Bar
+                      dataKey="count"
+                      name="Violations"
+                      fill="#3b82f6"
+                      radius={[6, 6, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-primary" />
+              Recent Activity Timeline
+            </CardTitle>
+
+            <CardDescription>
+              Latest actions and updates related to billboard violations
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div
+                  key={index}
+                  className="relative flex items-start gap-4 pl-8 pb-6"
+                >
+                  <div className="absolute left-0 top-1">
+                    <div className="h-3 w-3 rounded-full bg-primary" />
+                  </div>
+
+                  <div className="mt-1">
+                    <FileText className="h-4 w-4 text-primary" />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{activity.title}</p>
+
+                      <Badge variant={getActivityBadgeVariant(activity.status)}>
+                        {activity.status}
+                      </Badge>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      {activity.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Violation Heatmap Placeholder */}
         <Card className="mt-8">

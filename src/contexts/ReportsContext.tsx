@@ -2,6 +2,17 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { ReportStage, TimelineEvent } from "@/components/ReportTimeline";
 import { STORAGE_KEY, CivicReport, getActiveReports } from "@/lib/reports";
 import { ReportData } from "@/types/report";
+import { useGamification } from "@/contexts/GamificationContext";
+
+export interface ReportData {
+  id: string;
+  location: string;
+  type: string;
+  date: string;
+  status: ReportStage;
+  points?: number;
+  events: TimelineEvent[];
+}
 
 interface ReportsContextType {
   reports: ReportData[];
@@ -137,13 +148,14 @@ const mapCivicReportToReportData = (report: CivicReport): ReportData => {
 };
 
 export const ReportsProvider = ({ children }: { children: ReactNode }) => {
+  const { currentUser } = useGamification();
   const [reports, setReports] = useState<ReportData[]>(() => {
-    const active = getActiveReports("6");
+    const active = getActiveReports(currentUser.id);
     return active.map(mapCivicReportToReportData);
   });
 
   const syncReports = () => {
-    const active = getActiveReports("6");
+    const active = getActiveReports(currentUser.id);
     setReports(active.map(mapCivicReportToReportData));
   };
 
@@ -169,7 +181,7 @@ export const ReportsProvider = ({ children }: { children: ReactNode }) => {
     
     const newCivicReport: CivicReport = {
       id,
-      reporterId: "6",
+      reporterId: currentUser.id,
       location: newReportData.location,
       description: "",
       violationTypeId: "other",

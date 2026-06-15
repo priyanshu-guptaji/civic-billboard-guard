@@ -32,7 +32,6 @@ export interface CreateReportInput {
 
 export const STORAGE_KEY = "civic_reports_v1";
 
-
 export const REPORT_STATUSES: ReportStatus[] = [
   "Submitted",
   "Under Review",
@@ -76,7 +75,6 @@ export const loadAllReports = (): CivicReport[] => {
   const raw = safeJsonParse<CivicReport[]>(localStorage.getItem(STORAGE_KEY));
   if (raw && Array.isArray(raw)) return raw;
 
-  // Seed a tiny set so the timeline is visible immediately.
   const now = Date.now();
   const seeded: CivicReport[] = [
     {
@@ -129,13 +127,13 @@ export const loadAllReports = (): CivicReport[] => {
     },
   ];
 
-  saveAllReports(seeded);
+  saveAllReports(seeded, false); // Do not dispatch event on initial seed
   return seeded;
 };
 
-const saveAllReports = (reports: CivicReport[]) => {
+const saveAllReports = (reports: CivicReport[], dispatchEvent = true) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
-  if (typeof window !== "undefined") {
+  if (dispatchEvent && typeof window !== "undefined") {
     window.dispatchEvent(new Event("sync-reports"));
   }
 };
@@ -159,7 +157,6 @@ const maybeAutoAdvance = (report: CivicReport, now: number): CivicReport => {
   const lastEventAt = report.statusHistory[report.statusHistory.length - 1]?.at ?? report.updatedAt;
   const elapsedMs = now - lastEventAt;
 
-  // Simple mocked “backend workflow” timings.
   const nextDueMs =
     report.status === "Submitted"
       ? 10_000
@@ -199,23 +196,33 @@ export const reportStatusBadgeVariant = (
 
 export const getActiveReports = (reporterId?: string): CivicReport[] => {
   const now = Date.now();
-  const reports = loadAllReports();
+  // Fetch a clean snapshot directly from source to avoid updating stale filtered lists
+  const allReports = loadAllReports();
 
-  const updated = reports.map((r) => maybeAutoAdvance(r, now));
-  const changed = updated.some((r, idx) => r.updatedAt !== reports[idx]?.updatedAt || r.status !== reports[idx]?.status);
-  if (changed) saveAllReports(updated);
+  let hasChanges = false;
+  const updatedAllReports = allReports.map((report) => {
+    const updatedReport = maybeAutoAdvance(report, now);
+    if (updatedReport.updatedAt !== report.updatedAt) {
+      hasChanges = true;
+    }
+    return updatedReport;
+  });
 
-  const filtered = reporterId ? updated.filter((r) => r.reporterId === reporterId) : updated;
+  // Save back the global unsliced database, avoiding event loop chains
+  if (hasChanges) {
+    saveAllReports(updatedAllReports, false);
+  }
 
-  // newest first
-  filtered.sort((a, b) => b.createdAt - a.createdAt);
+  const filtered = reporterId 
+    ? updatedAllReports.filter((r) => r.reporterId === reporterId) 
+    : updatedAllReports;
 
-  return filtered;
+  // sort newest first
+  return [...filtered].sort((a, b) => b.createdAt - a.createdAt);
 };
 
-export const listReports = async (opts?: { reporterId?: string }) => {
+export const listReports = async (opts?: { reporterId?: string }): Promise<CivicReport[]> => {
   const filtered = getActiveReports(opts?.reporterId);
-
   // Simulate network latency.
   await new Promise((resolve) => setTimeout(resolve, 250));
   return filtered;
@@ -241,8 +248,9 @@ export const submitReport = async (input: CreateReportInput): Promise<CivicRepor
   // Simulate API call.
   await new Promise((resolve) => setTimeout(resolve, 900));
 
+  // Reload dynamically right before writing to guarantee transactional state integrity
   const existing = loadAllReports();
-  saveAllReports([newReport, ...existing]);
+  saveAllReports([newReport, ...existing], true);
 
   return newReport;
 };

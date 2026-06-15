@@ -1,16 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { ReportStage, TimelineEvent } from "@/components/ReportTimeline";
 import { STORAGE_KEY, CivicReport, getActiveReports } from "@/lib/reports";
-
-export interface ReportData {
-  id: string;
-  location: string;
-  type: string;
-  date: string;
-  status: ReportStage;
-  points?: number;
-  events: TimelineEvent[];
-}
+import { ReportData } from "@/types/report";
 
 interface ReportsContextType {
   reports: ReportData[];

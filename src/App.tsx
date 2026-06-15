@@ -11,7 +11,6 @@ import Community from "./pages/Community";
 import MyReports from "./pages/MyReports";
 import RiskScoring from "./pages/RiskScoring";
 import { GamificationProvider } from "./contexts/GamificationContext";
-import { ReportsProvider } from "./contexts/ReportsContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -21,7 +20,6 @@ const App = () => (
     <ThemeProvider>
       <TooltipProvider>
         <GamificationProvider>
-          <ReportsProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -36,7 +34,6 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-          </ReportsProvider>
         </GamificationProvider>
       </TooltipProvider>
     </ThemeProvider>

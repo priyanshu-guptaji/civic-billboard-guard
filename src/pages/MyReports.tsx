@@ -5,10 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, MapPin, Calendar } from "lucide-react";
-import { useReports, ReportData } from "@/contexts/ReportsContext";
+import { useQuery } from "@tanstack/react-query";
+import { listReports } from "@/lib/reports";
+import { ReportData } from "@/types/report";
 
 const MyReports = () => {
-  const { reports } = useReports();
+  const { data: reports = [] } = useQuery({
+    queryKey: ["reports"],
+    queryFn: listReports,
+  });
+
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 
   useEffect(() => {

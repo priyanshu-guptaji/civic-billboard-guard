@@ -55,6 +55,15 @@ interface Violation {
 }
 
 const Dashboard = () => {
+  interface Violation {
+  location: string;
+  type: string;
+  status: string;
+  severity: string;
+  reported: string;
+}
+  const [selectedViolation, setSelectedViolation] = useState<Violation | null>(null);
+  const [violationData, setViolationData] = useState<Violation[]>([
   const [selectedViolation, setSelectedViolation] = useState<Violation | null>(
     null,
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,19 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Camera, MapPin, Clock, Upload, Award, Zap } from "lucide-react";
+import { Camera, MapPin, Clock, Upload, Award, Zap, X } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { POINT_STRUCTURE, getCurrentBadge } from "@/lib/gamification";
 import { useGamification } from "@/contexts/GamificationContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { listReports, reportStatusBadgeVariant, submitReport } from "@/lib/reports";
-import { ReportStatusTimeline } from "@/components/ReportStatusTimeline";
 
 const Report = () => {
   const { currentUser, reportsCount, addPoints } = useGamification();
   const userPoints = currentUser.points;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     location: "",
     description: "",
@@ -51,6 +52,52 @@ const Report = () => {
       setFormData({ location: "", description: "", violationType: "", photo: null });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        setFormData({ ...formData, photo: file });
+      } else {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload an image file",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, photo: file });
+    }
+  };
+
+  const removePhoto = () => {
+    setFormData({ ...formData, photo: null });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -173,26 +220,80 @@ const Report = () => {
 
                   <div>
                     <Label htmlFor="photo">Photo Evidence</Label>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                      <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Upload photo of the billboard violation
-                      </p>
+                    <div 
+                      className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${
+                        isDragging 
+                          ? 'border-primary bg-primary/5 scale-105' 
+                          : 'border-border hover:border-primary/50'
+                      } ${formData.photo ? 'bg-muted/30' : ''}`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      {formData.photo ? (
+                        <div className="space-y-4">
+                          <div className="flex justify-center">
+                            <img
+                              src={URL.createObjectURL(formData.photo)}
+                              alt="Preview"
+                              className="max-h-48 rounded-lg object-cover"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground break-all">
+                              {formData.photo.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {(formData.photo.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <div className="flex gap-2 justify-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              Change Photo
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={removePhoto}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <Upload className={`h-8 w-8 mx-auto mb-2 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Drag and drop your image here
+                          </p>
+                          <p className="text-xs text-muted-foreground mb-4">
+                            or
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            Choose File
+                          </Button>
+                        </div>
+                      )}
                       <Input
+                        ref={fileInputRef}
                         id="photo"
                         type="file"
                         accept="image/*"
-                        onChange={(e) => setFormData({...formData, photo: e.target.files?.[0] || null})}
+                        onChange={handleFileSelect}
                         className="hidden"
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => document.getElementById('photo')?.click()}
-                      >
-                        Choose File
-                      </Button>
                     </div>
                   </div>
 

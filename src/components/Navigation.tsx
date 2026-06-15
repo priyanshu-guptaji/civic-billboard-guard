@@ -1,13 +1,25 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Focus, Camera, BarChart3, Menu, Sun, Moon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef  } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const Navigation = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { theme, toggleTheme } = useTheme();
+  
+  useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape" && isMenuOpen) {
+      setIsMenuOpen(false);
+      menuButtonRef.current?.focus();
+    }
+  };
+  document.addEventListener("keydown", handleKeyDown);
+  return () => document.removeEventListener("keydown", handleKeyDown);
+}, [isMenuOpen]);
 
   return (
     <nav className="bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50">
@@ -104,18 +116,26 @@ const Navigation = () => {
               )}
             </Button>
             <Button
+             ref={menuButtonRef}
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label="Toggle navigation menu"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5" aria-hidden="true" />
             </Button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pb-4 space-y-2">
+          <div 
+          id="mobile-menu"
+          role="menu"
+          aria-label="Mobile navigation"
+          className="md:hidden pb-4 space-y-2">
             <Link 
               to="/" 
               className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"

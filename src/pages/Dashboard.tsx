@@ -34,8 +34,15 @@ import {
 } from "@/components/ui/dialog";
 
 const Dashboard = () => {
-  const [selectedViolation, setSelectedViolation] = useState<any>(null);
-  const [violationData, setViolationData] = useState([
+  interface Violation {
+  location: string;
+  type: string;
+  status: string;
+  severity: string;
+  reported: string;
+}
+  const [selectedViolation, setSelectedViolation] = useState<Violation | null>(null);
+  const [violationData, setViolationData] = useState<Violation[]>([
     {
       location: "MG Road, Bangalore",
       type: "Unauthorized",

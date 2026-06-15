@@ -17,7 +17,9 @@ import {
   Users,
   Camera,
   Activity,
+  FileText,
 } from "lucide-react";
+
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -153,6 +155,38 @@ const Dashboard = () => {
   const resolutionRate = Math.round(
     (resolvedViolations / totalViolations) * 100,
   );
+  const recentActivities = [
+    {
+      title: "New Violation Report Submitted",
+      time: "10:15 AM",
+      status: "Report",
+    },
+    {
+      title: "AI Analysis Completed",
+      time: "10:45 AM",
+      status: "AI",
+    },
+    {
+      title: "Case Assigned for Review",
+      time: "11:10 AM",
+      status: "Review",
+    },
+    {
+      title: "Authority Inspection Scheduled",
+      time: "12:30 PM",
+      status: "Inspection",
+    },
+    {
+      title: "Violation Escalated",
+      time: "02:00 PM",
+      status: "Escalated",
+    },
+    {
+      title: "Case Resolved",
+      time: "04:15 PM",
+      status: "Resolved",
+    },
+  ];
   const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e"];
 
   const getStatusColor = (status: string) => {
@@ -180,6 +214,20 @@ const Dashboard = () => {
         return "secondary";
     }
   };
+
+  const getActivityBadgeVariant = (status: string) => {
+    switch (status) {
+      case "Resolved":
+        return "default";
+
+      case "Escalated":
+        return "destructive";
+
+      default:
+        return "secondary";
+    }
+  };
+
   const markAsResolved = () => {
     if (!selectedViolation) return;
 
@@ -717,6 +765,52 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-primary" />
+              Recent Activity Timeline
+            </CardTitle>
+
+            <CardDescription>
+              Latest actions and updates related to billboard violations
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div
+                  key={index}
+                  className="relative flex items-start gap-4 pl-8 pb-6"
+                >
+                  <div className="absolute left-0 top-1">
+                    <div className="h-3 w-3 rounded-full bg-primary" />
+                  </div>
+
+                  <div className="mt-1">
+                    <FileText className="h-4 w-4 text-primary" />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{activity.title}</p>
+
+                      <Badge variant={getActivityBadgeVariant(activity.status)}>
+                        {activity.status}
+                      </Badge>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      {activity.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Violation Heatmap Placeholder */}
         <Card className="mt-8">

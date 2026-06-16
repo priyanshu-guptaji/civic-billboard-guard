@@ -55,6 +55,8 @@ interface Violation {
 }
 
 const Dashboard = () => {
+  const [selectedViolation, setSelectedViolation] =
+  useState<Violation | null>(null);
   interface Violation {
   location: string;
   type: string;

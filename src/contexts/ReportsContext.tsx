@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { ReportStage, TimelineEvent } from "@/components/ReportTimeline";
 import { STORAGE_KEY, CivicReport, getActiveReports } from "@/lib/reports";
+import { ReportData } from "@/types/report";
 import { useGamification } from "@/contexts/GamificationContext";
 
 export interface ReportData {

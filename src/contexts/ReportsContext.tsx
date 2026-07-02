@@ -19,48 +19,6 @@ interface ReportsContextType {
   addReport: (report: Omit<ReportData, "id" | "status" | "date" | "events" | "points">) => void;
 }
 
-const initialReports: ReportData[] = [
-  {
-    id: "REP-2026-001",
-    location: "MG Road, Bangalore",
-    type: "Unauthorized Billboard",
-    date: "2026-05-27",
-    status: "Under Review",
-    points: 25,
-    events: [
-      { stage: "Submitted", timestamp: "May 27, 09:00 AM", description: "Report received via mobile app." },
-      { stage: "AI Processed", timestamp: "May 27, 09:02 AM", description: "AI flagged 85% probability of violation." },
-      { stage: "Under Review", timestamp: "May 27, 11:30 AM", description: "Forwarded to municipal authority for manual verification." }
-    ]
-  },
-  {
-    id: "REP-2026-002",
-    location: "Brigade Road Junction",
-    type: "Oversized Dimensions",
-    date: "2026-05-25",
-    status: "Resolved",
-    points: 30,
-    events: [
-      { stage: "Submitted", timestamp: "May 25, 14:15 PM", description: "User reported structural hazard." },
-      { stage: "AI Processed", timestamp: "May 25, 14:16 PM", description: "Dimensions exceed legal limits." },
-      { stage: "Under Review", timestamp: "May 26, 10:00 AM", description: "Authority verified the violation." },
-      { stage: "Field Agent Dispatched", timestamp: "May 26, 14:00 PM", description: "Team dispatched for removal." },
-      { stage: "Resolved", timestamp: "May 27, 16:45 PM", description: "Billboard removed successfully. +100 points awarded." }
-    ]
-  },
-  {
-    id: "REP-2026-003",
-    location: "Commercial Street",
-    type: "Safety Hazard",
-    date: "2026-05-28",
-    status: "Submitted",
-    points: 40,
-    events: [
-      { stage: "Submitted", timestamp: "May 28, 08:30 AM", description: "Report submitted." }
-    ]
-  }
-];
-
 const ReportsContext = createContext<ReportsContextType | undefined>(undefined);
 
 const mapCivicReportToReportData = (report: CivicReport): ReportData => {
@@ -154,10 +112,10 @@ export const ReportsProvider = ({ children }: { children: ReactNode }) => {
     return active.map(mapCivicReportToReportData);
   });
 
-  const syncReports = () => {
+  const syncReports = React.useCallback(() => {
     const active = getActiveReports(currentUser.id);
     setReports(active.map(mapCivicReportToReportData));
-  };
+  }, [currentUser.id]);
 
   useEffect(() => {
     syncReports();
@@ -173,7 +131,7 @@ export const ReportsProvider = ({ children }: { children: ReactNode }) => {
       clearInterval(interval);
       window.removeEventListener("sync-reports", handleSync);
     };
-  }, []);
+  }, [syncReports]);
 
   const addReport = (newReportData: Omit<ReportData, "id" | "status" | "date" | "events" | "points">) => {
     const today = new Date();

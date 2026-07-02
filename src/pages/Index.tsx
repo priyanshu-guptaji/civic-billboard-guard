@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Camera, BarChart3, Users, Zap, CheckCircle, AlertTriangle, MapPin, Brain, Eye, Smartphone } from "lucide-react";
+import { Shield, Camera, BarChart3, Users, CheckCircle, AlertTriangle, Brain, Eye, Smartphone } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import heroImage from "@/assets/hero-billboard.jpg";

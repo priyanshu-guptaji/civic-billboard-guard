@@ -167,7 +167,6 @@ export class StreamingPDFExporter {
 
     // Summary statistics
     const statusCounts = this.calculateStatusCounts(filtered);
-    const typeCounts = this.calculateTypeCounts(filtered);
 
     pdfContent.push(`
       <div class="summary">

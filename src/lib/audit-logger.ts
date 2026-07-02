@@ -272,7 +272,7 @@ export class ViolationAuditLogger {
   /**
    * Fetch historical logs from backend (implementation placeholder)
    */
-  private static async fetchFromBackend(violationId: string): Promise<AuditLogEntry[]> {
+  private static async fetchFromBackend(_violationId: string): Promise<AuditLogEntry[]> {
     // TODO: Implement backend fetch
     // In production:
     // - Query audit log database

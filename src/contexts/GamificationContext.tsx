@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { MockUser, initialUser, mockUsers, POINT_STRUCTURE } from "@/lib/gamification";
+import { MockUser, mockUsers } from "@/lib/gamification";
 
 interface GamificationContextType {
   users: MockUser[];
@@ -16,13 +16,13 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem("gamification_users");
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved) as Partial<MockUser>[];
         // Ensure all users have the new fields
-        return parsed.map((user: any) => ({
-          id: user.id,
-          name: user.name,
-          points: user.points,
-          avatarUrl: user.avatarUrl,
+        return parsed.map((user) => ({
+          id: user.id || "",
+          name: user.name || "",
+          points: user.points || 0,
+          avatarUrl: user.avatarUrl || "",
           reportsCount: user.reportsCount ?? 0,
           starredBy: user.starredBy ?? []
         }));

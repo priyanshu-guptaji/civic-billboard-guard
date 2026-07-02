@@ -10,11 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   ShieldAlert, 
   ShieldCheck, 
-  ShieldQuestion, 
   Sliders, 
   Activity, 
   Download, 
-  RefreshCw, 
   Sparkles, 
   Info,
   Scale,

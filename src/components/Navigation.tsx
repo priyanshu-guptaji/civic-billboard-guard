@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Focus, Camera, BarChart3, Menu, Sun, Moon } from "lucide-react";
+import { Focus, Camera, Menu, Sun, Moon } from "lucide-react";
 import { useState, useEffect, useRef  } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 

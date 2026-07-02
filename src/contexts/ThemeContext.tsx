@@ -18,7 +18,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
         return "dark";
       }
-    } catch (e) {
+    } catch {
       // ignore (e.g., during SSR or unavailable localStorage)
     }
     return "light";
@@ -36,7 +36,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     try {
       localStorage.setItem("civicguard-theme", theme);
-    } catch (e) {
+    } catch {
       // ignore write errors
     }
   }, [theme]);

@@ -55,21 +55,8 @@ interface Violation {
 }
 
 const Dashboard = () => {
-  const [selectedViolation, setSelectedViolation] =
-  useState<Violation | null>(null);
-  interface Violation {
-  location: string;
-  type: string;
-  status: string;
-  severity: string;
-  reported: string;
-}
   const [selectedViolation, setSelectedViolation] = useState<Violation | null>(null);
   const [violationData, setViolationData] = useState<Violation[]>([
-  const [selectedViolation, setSelectedViolation] = useState<Violation | null>(
-    null,
-  );
-  const [violationData, setViolationData] = useState([
     {
       location: "MG Road, Bangalore",
       type: "Unauthorized",
